@@ -1,0 +1,54 @@
+// Problem 3: Rubiks Cube Data Structures:
+
+# Define a class to represent a Rubik's Cube
+class RubiksCube:
+    
+    # Initialize the cube with a given size
+    def __init__(size):
+        - Set the size of the cube (e.g., 3 for a 3x3 cube)
+        - Initialize six faces (front, back, left, right, up, down)
+        - Each face is a 1D list containing size * size elements
+        - Each face is filled with a default color (e.g., Green for front, Blue for back, etc.)
+    
+    # Function to convert a 2D index (row, col) to a 1D index in a face
+    def index_2d_to_1d(row, col):
+        - Return the 1D index equivalent of the 2D row, col position
+
+    # Function to rotate a face 90 degrees clockwise
+    def rotate_face(face):
+        - Create a new empty face (1D list of size * size)
+        - For each element in the original face:
+            - Use the 2D index to 1D index conversion
+            - Place each element in its new rotated position in the new face
+        - Return the rotated face
+
+    # Function to rotate the top layer of the cube (up face and adjacent rows)
+    def rotate_top_layer():
+        - Rotate the up face by calling rotate_face
+        - Extract the top row from the front, left, right, and back faces
+        - Shift the rows between these adjacent faces
+        - Replace the top row in each adjacent face with the corresponding shifted row
+    
+    # Function to display a single face in a 2D format
+    def display_face(face):
+        - For each row in the face:
+            - Print the elements of that row (based on 1D array indices)
+
+    # Function to display the entire cube (all six faces)
+    def display():
+        - Print the front, back, left, right, up, and down faces
+        - Call display_face for each face to show it in a 2D format
+
+# Testing the Rubik's Cube logic
+def test_rubiks_cube():
+    - Create a new RubiksCube object with a default size (e.g., 3x3)
+    - Display the initial cube
+    - Rotate the top layer
+    - Display the cube after rotation
+
+// The cube is initialized with a flexible size and each face is represented as a 1D list of colors.
+    // A 1D list allows us to store the entire face in a one single array, so nested lists are not needed. 
+    // We can still treat it as a 2D grid using index arithmetic (row, column) to access or modify elements
+    // The cube itself is stored in a dictionary where each key will be the name of the face whose value is the 
+    // 1D list representing the face. 
+    // Cube is stored in state memory 
