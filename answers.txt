@@ -1,0 +1,173 @@
+(* Grammar: *)
+type statement =
+  | Assignment of identifier * expression
+  | Expression of expression
+
+and expression =
+  | Plus of expression * term
+  | Term of term
+
+and term =
+  | Mult of term * factor
+  | Factor of factor
+
+and factor =
+  | Grouping of expression
+  | Identifier of string
+
+(* Identifiers *)
+let identifiers = ["A"; "B"; "C"]
+
+(* Operators *)
+let operators = ['+'; '*'; '=']
+
+
+Problem 1:
+Parse Tree: 
+
+Statement
+    |
+        Assignment
+    __________|__________
+    |                   |
+Identifier    =     Expression
+    |                    |
+    A                  Term
+                     |      |
+                   Term * Factor
+                   |          |
+               Factor       (Expression)
+                |                |
+           Identifier         Expression
+                |                |
+                B              Term * Factor
+                              |           |
+                          Factor     (Expression)
+                           |              |
+                     Identifier     Expression + Term
+                           |         |          |
+                           C      Term        Term
+                                   |            |
+                                Factor        Factor
+                                   |            |
+                              Identifier    Identifier
+                                   |               |
+                                   A               B
+
+Leftmost Derivation:
+
+A = B * (C * (A + B))
+
+<assign> => <id> = <expr>
+         => A = <expr>
+         => A = <term>
+         => A = <term> * <factor>
+         => A = <factor> * <factor>
+         => A = <id> * <factor>
+         => A = B * <factor>
+         => A = B * ( <expr> )
+         => A = B * ( <term> )
+         => A = B * ( <term> * <factor> )
+         => A = B * ( <factor> * <factor> )
+         => A = B * ( <id> * <factor> )
+         => A = B * ( C * <factor> )
+         => A = B * ( C * ( <expr> ) )
+         => A = B * ( C * ( <expr> + <term> ) )
+         => A = B * ( C * ( <term> + <term> ) )
+         => A = B * ( C * ( <factor> + <term> ) )
+         => A = B * ( C * ( <id> + <term> ) )
+         => A = B * ( C * ( A + <term> ) )
+         => A = B * ( C * ( A + <factor> ) )
+         => A = B * ( C * ( A + <id> ) )
+         => A = B * ( C * ( A + B ) )
+
+(* Pseudocode for the problem 2 *)
+let u = ref 42
+let v = ref 69
+let w = ref 17
+
+let add z =
+  u := !v + !u + z
+
+let bar fun_ =
+  let u = w in
+  fun_ !v
+
+let foo x w =
+  let v = ref x in
+  bar add
+
+let main () =
+  foo !u 13;
+  Printf.printf "%d\n" !u
+
+(* a. Using Static Scope, what is printed to the screen? *)
+Static => not looking down at the stack, but takes global values
+        add(r)
+            V = 69
+            U = 42
+            Z = 69
+            U = 69 + 42 + 69
+        bar:
+            V = 69
+            U = 42
+        foo(u, 13):
+            V = 42
+            U = 42
+            W = 17
+            X = 42
+        bar(add(v))
+        main:
+            U = 42
+            V = 69
+            W = 17
+        total = (69 + 42 + 69) = 180
+
+    - The add function uses the global u and v then updates u to 180
+
+(* b. Using Dynamic Scope with Deep Binding, what is printed to the screen?  *)
+        add(r)
+            U = 42 
+            V = 42
+            Z = 42
+            U = 42 + 42 + 42
+        bar:
+            V = 42
+            U = 42
+        bar(add(v))
+        foo(u, 13):
+            W = 13
+            V = 42
+            U = 42
+        main:
+            U = 42
+            V = 69
+            W = 17
+            X = 42
+        total = (42 + 42 + 42) = 126
+    
+    - Dynamic deep includes the add function which uses the local v from foo (42). This makes u = 42 + 42 + 42 = 126
+
+(* c. Using Dynamic Scope with Shallow Binding, what is printed to the screen? *)
+
+        add(r)
+        bar:
+            V = 42
+            U = 17
+        foo(u, 13):
+            V = 42
+            U = 42
+            W = 17
+        main:
+            U = 42
+            V = 69
+            W = 17
+            X = 42
+        total = (42 + 42 + 17) = 101
+
+    - With shallow binding the add function uses the most recent u which is 17 from bar. 
+      This will make u = 42 + 17 + 42 = 101.
+
+
+
+
